@@ -26,6 +26,7 @@ public class BloodInventoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetInventoryById(string id)
     {
+       
         var inventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
         if (inventory == null)
         {
@@ -37,6 +38,7 @@ public class BloodInventoryController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateInventory(Inventory inventory)
     {
+        inventory.SetId(inventory.Id);
         await _bloodInventoryService.CreateInventoryAsync(inventory);
         return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
     }

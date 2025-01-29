@@ -35,8 +35,8 @@ public async Task<ActionResult<Donation>> CreateDonation([FromBody] Donation don
     {
         return BadRequest("Donation data is required.");
     }
-
-    // Create the donation
+    donation.SetId(donation.Id);
+    
     var createdDonation = await _donationService.CreateDonationAsync(donation);
     return CreatedAtAction(nameof(GetAllDonations), new { id = createdDonation.Id }, createdDonation);
 }

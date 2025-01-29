@@ -11,7 +11,7 @@ namespace BloodBankAPI.Services
 
         public BloodInventoryService(IMongoDatabase database)
         {
-            _inventory = database.GetCollection<Inventory>("BloodInventory");
+            _inventory = database.GetCollection<Inventory>("Inventory");
         }
 
         // Get all inventory items

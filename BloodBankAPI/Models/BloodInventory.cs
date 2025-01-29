@@ -9,5 +9,17 @@ public class Inventory
     public string BloodType { get; set; }  
     public int Quantity { get; set; }     
     public DateTime DonationDate { get; set; }
+    public void SetId(string? id)
+    {
+        if (!string.IsNullOrWhiteSpace(id) && ObjectId.TryParse(id, out var objectId))
+        {
+            Id = objectId.ToString(); 
+        }
+        else
+        {
+            Id = ObjectId.GenerateNewId().ToString(); 
+        }
+ 
+}  
 }
 }

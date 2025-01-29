@@ -1,57 +1,71 @@
-using Microsoft.AspNetCore.Mvc;
 using BloodBankAPI.Models;
 using BloodBankAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
-namespace BloodBankAPI.Controllers{
-
-[ApiController]
-[Route("api/[controller]")]
-public class BloodDonorController : ControllerBase
+namespace BloodBankAPI.Controllers
 {
-    private readonly IDonorService _bloodDonorService;
-
-    public BloodDonorController(IDonorService bloodDonorService)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DonorController : ControllerBase
     {
-        _bloodDonorService = bloodDonorService;
-    }
+        private readonly IDonorService _donorService;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllDonations()
-    {
-        var donations = await _bloodDonorService.GetAllDonorsAsync();
-        return Ok(donations);
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetDonationById(string id)
-    {
-        var donation = await _bloodDonorService.GetDonorByIdAsync(id);
-        if (donation == null)
+        public DonorController(IDonorService donorService)
         {
-            return NotFound();
+            _donorService = donorService;
         }
-        return Ok(donation);
+
+        [HttpPost]
+    public async Task <IActionResult> Create([FromBody] Donor donor)
+    {
+        
+        if (donor == null || string.IsNullOrEmpty(donor.BloodType))
+        {
+            return BadRequest("Donor data is required and blood type is required.");
+        }
+        donor.SetId(donor.Id);
+        await _donorService.CreateDonorAsync(donor);
+        return Ok( donor);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateDonation([FromBody] Donor bloodDonation)
-    {
-        await _bloodDonorService.CreateDonorAsync(bloodDonation);
-        return CreatedAtAction(nameof(GetDonationById), new { id = bloodDonation.Id }, bloodDonation);
-    }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateDonation(string id, [FromBody] Donor bloodDonation)
-    {
-        await _bloodDonorService.UpdateDonorAsync(id, bloodDonation); // Call without assignment
-        return NoContent(); // Return a response indicating success
-    }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Donor>> GetById(string id)
+        {
+            var donor = await _donorService.GetDonorByIdAsync(id);
+            donor.SetId(donor.Id);
+            return Ok(donor);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteDonation(string id)
-    {
-        await _bloodDonorService.DeleteDonorAsync(id); // Call without assignment
-        return NoContent(); // Return a response indicating success
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Donor>>> GetAll()
+        {
+            var donors = await _donorService.GetAllDonorsAsync();
+            return Ok(donors);
+        }
+
+       [HttpPut("{id}")]
+       public async Task<ActionResult<Donor>> Update(string id, Donor donor)
+       {
+           
+           await _donorService.UpdateDonorAsync(id, donor);
+           var updatedDonor = await _donorService.GetDonorByIdAsync(id);
+           updatedDonor.SetId(updatedDonor.Id); 
+           return Ok(updatedDonor);
+       }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDonor(string id)
+        {
+            var donor = await _donorService.GetDonorByIdAsync(id);
+            donor.SetId(donor.Id);
+            if (donor == null)
+            {
+                return NotFound();
+            }
+            await _donorService.DeleteDonorAsync(id);
+            return NoContent();
+        }
     }
-  }
 }

@@ -19,7 +19,7 @@ builder.Services.AddSingleton<IMongoCollection<Donation>>(sp =>
     sp.GetRequiredService<IMongoDatabase>().GetCollection<Donation>("Donations"));
 
 builder.Services.AddScoped<IDonorService, DonorService>();
-builder.Services.AddScoped<IDonationService, DonationService>(); // Ensure this is registered
+builder.Services.AddScoped<IDonationService, DonationService>(); 
 builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
 
 builder.Services.AddEndpointsApiExplorer();

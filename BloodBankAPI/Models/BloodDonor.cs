@@ -11,6 +11,18 @@ public class Donor
     public int Age { get; set; }
     public string Gender { get; set; }
     public string ContactInfo { get; set; }
-    public string BloodType { get; set; } // Reference to BloodType
+    public string BloodType { get; set; } 
+    public void SetId(string? id)
+    {
+        if (!string.IsNullOrWhiteSpace(id) && ObjectId.TryParse(id, out var objectId))
+        {
+            Id = objectId.ToString(); // Store as valid ObjectId
+        }
+        else
+        {
+            Id = ObjectId.GenerateNewId().ToString(); // Generate new ObjectId if invalid
+        }
+
+}  
 }
 }
