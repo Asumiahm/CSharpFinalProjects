@@ -1,6 +1,14 @@
 using BloodBankAPI.Models;
-public interface IBloodDonationService
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BloodBankAPI.Services;
+using MongoDB.Driver;
+
+namespace BloodBankAPI.Services
 {
-    Task<BloodDonation> RecordDonationAsync(BloodDonation donation);
-    Task<IEnumerable<BloodDonation>> GetAllDonationsAsync();
+    public interface IDonationService
+    {
+        Task<Donation> CreateDonationAsync(Donation donation);  
+        Task<List<Donation>> GetAllDonationsAsync(); 
+    }
 }

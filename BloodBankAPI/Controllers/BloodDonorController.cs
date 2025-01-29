@@ -8,9 +8,9 @@ namespace BloodBankAPI.Controllers{
 [Route("api/[controller]")]
 public class BloodDonorController : ControllerBase
 {
-    private readonly IBloodDonorService _bloodDonorService;
+    private readonly IDonorService _bloodDonorService;
 
-    public BloodDonorController(IBloodDonorService bloodDonorService)
+    public BloodDonorController(IDonorService bloodDonorService)
     {
         _bloodDonorService = bloodDonorService;
     }
@@ -34,14 +34,14 @@ public class BloodDonorController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDonation([FromBody] BloodDonor bloodDonation)
+    public async Task<IActionResult> CreateDonation([FromBody] Donor bloodDonation)
     {
         await _bloodDonorService.CreateDonorAsync(bloodDonation);
         return CreatedAtAction(nameof(GetDonationById), new { id = bloodDonation.Id }, bloodDonation);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateDonation(string id, [FromBody] BloodDonor bloodDonation)
+    public async Task<IActionResult> UpdateDonation(string id, [FromBody] Donor bloodDonation)
     {
         await _bloodDonorService.UpdateDonorAsync(id, bloodDonation); // Call without assignment
         return NoContent(); // Return a response indicating success

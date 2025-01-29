@@ -2,12 +2,12 @@ using BloodBankAPI.Models;
 
 namespace BloodBankAPI.Services{
 
-public interface IBloodDonorService
+public interface IDonorService
 {
-    Task<List<BloodDonor>> GetAllDonorsAsync();
-    Task<BloodDonor> GetDonorByIdAsync(string id);
-    Task CreateDonorAsync(BloodDonor donor);
-    Task UpdateDonorAsync(string id, BloodDonor donor);
+    Task<List<Donor>> GetAllDonorsAsync();
+    Task<Donor> GetDonorByIdAsync(string id);
+    Task CreateDonorAsync(Donor donor);
+    Task UpdateDonorAsync(string id, Donor donor);
     Task DeleteDonorAsync(string id);
 }
 }

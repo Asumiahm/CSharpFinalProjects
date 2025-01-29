@@ -4,28 +4,27 @@ using BloodBankAPI.Models;
 
 namespace BloodBankAPI.Services{
 
-public class BloodDonationService : IBloodDonationService
+public class DonationService : IDonationService
 {
-    private readonly IMongoCollection<BloodDonation> _donationCollection;
-    private readonly IBloodInventoryService _inventoryService;
+  private readonly IMongoCollection<Donation> _donationCollection;
 
-    public BloodDonationService(IMongoDatabase database, IBloodInventoryService inventoryService)
-    {
-        _donationCollection = database.GetCollection<BloodDonation>("BloodDonations");
-        _inventoryService = inventoryService;
-    }
 
-    public async Task<BloodDonation> RecordDonationAsync(BloodDonation donation)
-    {
-        await _donationCollection.InsertOneAsync(donation);
-        await _inventoryService.UpdateInventoryAsync(donation.BloodType, donation.QuantityInUnits);
-        return donation;
-    }
+    public DonationService(IMongoDatabase database)
+        {
+            _donationCollection = database.GetCollection<Donation>("Donations");
+        }
 
-    // Get all blood donations
-    public async Task<IEnumerable<BloodDonation>> GetAllDonationsAsync()
-    {
-        return await _donationCollection.Find(FilterDefinition<BloodDonation>.Empty).ToListAsync();
-    }
+public async Task<Donation> CreateDonationAsync(Donation donation)
+{
+    await _donationCollection.InsertOneAsync(donation);
+    return donation;
+}
+
+public async Task<List<Donation>> GetAllDonationsAsync()
+{
+    return await _donationCollection.Find(_ => true).ToListAsync();
+}
+
 }
 }
+

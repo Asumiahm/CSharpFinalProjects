@@ -3,31 +3,31 @@ using BloodBankAPI.Models;
 
 namespace BloodBankAPI.Services{
     
-public class BloodDonorService : IBloodDonorService
+public class DonorService : IDonorService
 {
-    private readonly IMongoCollection<BloodDonor> _donors;
+    private readonly IMongoCollection<Donor> _donors;
 
-    public BloodDonorService(IMongoDatabase database)
+    public DonorService(IMongoDatabase database)
     {
-        _donors = database.GetCollection<BloodDonor>("BloodDonors");
+        _donors = database.GetCollection<Donor>("BloodDonors");
     }
 
-    public async Task<List<BloodDonor>> GetAllDonorsAsync()
+    public async Task<List<Donor>> GetAllDonorsAsync()
     {
         return await _donors.Find(donor => true).ToListAsync();
     }
 
-    public async Task<BloodDonor> GetDonorByIdAsync(string id)
+    public async Task<Donor> GetDonorByIdAsync(string id)
     {
         return await _donors.Find(donor => donor.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task CreateDonorAsync(BloodDonor donor)
+    public async Task CreateDonorAsync(Donor donor)
     {
         await _donors.InsertOneAsync(donor);
     }
 
-    public async Task UpdateDonorAsync(string id, BloodDonor donor)
+    public async Task UpdateDonorAsync(string id, Donor donor)
     {
         await _donors.ReplaceOneAsync(d => d.Id == id, donor);
     }

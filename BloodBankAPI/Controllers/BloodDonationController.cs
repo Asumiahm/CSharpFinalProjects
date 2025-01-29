@@ -7,30 +7,38 @@ namespace BloodBankAPI.Controllers{
 
 [ApiController]
 [Route("api/[controller]")]
-public class BloodDonationController : ControllerBase
+public class DonationController : ControllerBase
 {
-    private readonly IBloodDonationService _donationService;
+    private readonly IDonationService _donationService;
 
-    public BloodDonationController(IBloodDonationService donationService)
+    public DonationController(IDonationService donationService)
     {
         _donationService = donationService;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> RecordDonation([FromBody] BloodDonation donation)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        var result = await _donationService.RecordDonationAsync(donation);
-        return CreatedAtAction(nameof(RecordDonation), new { id = result.Id }, result);
-    }
-
     [HttpGet]
-    public async Task<IActionResult> GetAllDonations()
+public async Task<ActionResult<List<Donation>>> GetAllDonations()
+{
+    var donations = await _donationService.GetAllDonationsAsync();
+    if (donations == null || donations.Count == 0)
     {
-        var donations = await _donationService.GetAllDonationsAsync();
-        return Ok(donations);
+        return NotFound("No donations found.");
     }
+    return Ok(donations);
+}
+
+
+    [HttpPost]
+public async Task<ActionResult<Donation>> CreateDonation([FromBody] Donation donation)
+{
+    if (donation == null)
+    {
+        return BadRequest("Donation data is required.");
+    }
+
+    // Create the donation
+    var createdDonation = await _donationService.CreateDonationAsync(donation);
+    return CreatedAtAction(nameof(GetAllDonations), new { id = createdDonation.Id }, createdDonation);
+}
 }
 }

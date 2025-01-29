@@ -35,23 +35,19 @@ public class BloodInventoryController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateInventory(BloodInventory inventory)
+    public async Task<IActionResult> CreateInventory(Inventory inventory)
     {
         await _bloodInventoryService.CreateInventoryAsync(inventory);
         return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
     }
 
-    [HttpPut("{Type}")]
-    public async Task<IActionResult> UpdateInventory(string bloodType, int quantityInUnits)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateInventory(string id, [FromBody] Inventory updatedInventory)
     {
-        var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(bloodType);
-        if (existingInventory == null)
-        {
-            return NotFound();
-        }
-        await _bloodInventoryService.UpdateInventoryAsync(bloodType, quantityInUnits);
-        return NoContent();
+        await _bloodInventoryService.UpdateInventoryAsync(id, updatedInventory);
+        return NoContent();  // If the update was successful, return 204 No Content
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInventory(string id)

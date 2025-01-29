@@ -1,13 +1,15 @@
 using BloodBankAPI.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace BloodBankAPI.Services{
-
-public interface IBloodInventoryService
+namespace BloodBankAPI.Services
 {
-    Task<List<BloodInventory>> GetAllInventoryAsync();
-    Task<BloodInventory> GetInventoryByIdAsync(string id);
-    Task CreateInventoryAsync(BloodInventory inventory);
-    Task UpdateInventoryAsync(string bloodType, int Quantity);
-    Task DeleteInventoryAsync(string id);
-}
+    public interface IBloodInventoryService
+    {
+        Task<IEnumerable<Inventory>> GetAllInventoryAsync();
+        Task<Inventory> GetInventoryByIdAsync(string id);
+        Task CreateInventoryAsync(Inventory inventory);
+        Task UpdateInventoryAsync(string id, Inventory updatedInventory);
+        Task DeleteInventoryAsync(string id);
+    }
 }

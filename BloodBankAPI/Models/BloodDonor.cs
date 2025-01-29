@@ -2,11 +2,11 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 namespace BloodBankAPI.Models{
 
-public class BloodDonor
+public class Donor
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
     public string Name { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }
