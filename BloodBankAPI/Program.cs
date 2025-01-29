@@ -11,16 +11,29 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
     return client.GetDatabase("BloodBankDatabase"); // Specify your database name here
 });
 
-builder.Services.AddSingleton<IMongoCollection<Donor>>(sp =>
-    sp.GetRequiredService<IMongoDatabase>().GetCollection<Donor>("Donors"));
-builder.Services.AddSingleton<IMongoCollection<Inventory>>(sp =>
-    sp.GetRequiredService<IMongoDatabase>().GetCollection<Inventory>("Inventory"));
-builder.Services.AddSingleton<IMongoCollection<Donation>>(sp =>
-    sp.GetRequiredService<IMongoDatabase>().GetCollection<Donation>("Donations"));
+    builder.Services.AddSingleton<IMongoCollection<Donor>>(sp =>
+        sp.GetRequiredService<IMongoDatabase>().GetCollection<Donor>("Donors"));
+    builder.Services.AddSingleton<IMongoCollection<Inventory>>(sp =>
+        sp.GetRequiredService<IMongoDatabase>().GetCollection<Inventory>("Inventory"));
+    builder.Services.AddSingleton<IMongoCollection<Donation>>(sp =>
+        sp.GetRequiredService<IMongoDatabase>().GetCollection<Donation>("Donations"));
+    builder.Services.AddSingleton<IMongoCollection<Request>>(sp =>
+        sp.GetRequiredService<IMongoDatabase>().GetCollection<Request>("Requests"));
+    builder.Services.AddSingleton<IMongoCollection<Recipient>>(sp =>
+        sp.GetRequiredService<IMongoDatabase>().GetCollection<Recipient>("Recipients"));
+
+
+
+
 
 builder.Services.AddScoped<IDonorService, DonorService>();
 builder.Services.AddScoped<IDonationService, DonationService>(); 
 builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IRecipientService, RecipientService>();
+
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
