@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BloodBankAPI.Models
 {
@@ -10,8 +10,14 @@ namespace BloodBankAPI.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
-        public string? BloodType { get; set; }  
-        public int Quantity { get; set; }     
+        [Required(ErrorMessage = "Blood Type is required.")]
+        [RegularExpression("^(A|B|AB|O)[+-]$", ErrorMessage = "Invalid blood type format.")]
+        public string BloodType { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
+        public int Quantity { get; set; }
+
+        [Required(ErrorMessage = "Donation date is required.")]
         public DateTime DonationDate { get; set; }
 
         public void SetId(string? id)

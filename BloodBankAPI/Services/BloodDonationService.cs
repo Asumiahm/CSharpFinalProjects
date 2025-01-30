@@ -37,12 +37,14 @@ public async Task<Donation> CreateDonationAsync(Donation donation)
     return donation;*/
 }
 
-public async Task<List<Donation>> GetAllDonationsAsync()
-{
+public async Task<List<Donation>> GetAllDonationsPaginatedAsync(int page, int pageSize){
             try
             {
-                return await _donationCollection.Find(_ => true).ToListAsync();
-            }
+            return await _donationCollection
+            .Find(d => true)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();            }
             catch (Exception ex)
             {
                 throw new Exception($"Internal Server Error: {ex.Message}"); // Simulating HTTP 500 Internal Server Error

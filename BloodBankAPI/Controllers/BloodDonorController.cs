@@ -16,7 +16,7 @@ namespace BloodBankAPI.Controllers
             _donorService = donorService;
         }
 
-        [HttpPost]
+    [HttpPost]
     public async Task <IActionResult> Create([FromBody] Donor donor)
     {
         try
@@ -26,6 +26,10 @@ namespace BloodBankAPI.Controllers
                 {
                     return BadRequest("Donor data and blood type are required.");
                 }
+                if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
                 // Set unique ID for the donor
                 donor.SetId(donor.Id);
@@ -48,7 +52,7 @@ namespace BloodBankAPI.Controllers
     }
 
 
-        [HttpGet("{id}")]
+[HttpGet("{id:length(24)}")]
         public async Task<ActionResult<Donor>> GetById(string id)
         {   
             try
@@ -99,7 +103,9 @@ namespace BloodBankAPI.Controllers
             return Ok(donors);*/
         }
 
-       [HttpPut("{id}")]
+        
+
+[HttpPut("{id:length(24)}")]
        public async Task<ActionResult<Donor>> Update(string id, [FromBody] Donor donor)
         {
             try
@@ -108,6 +114,10 @@ namespace BloodBankAPI.Controllers
                 {
                     return BadRequest("Donor data is required.");
                 }
+                if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
                 var existingDonor = await _donorService.GetDonorByIdAsync(id);
                 if (existingDonor == null)
@@ -125,6 +135,26 @@ namespace BloodBankAPI.Controllers
                 return StatusCode(500, $"Error updating donor: {ex.Message}");
             }
         }
+
+        [HttpDelete("{id:length(24)}")]
+public async Task<IActionResult> DeleteDonor(string id)
+{
+    var donor = await _donorService.GetDonorByIdAsync(id);
+    if (donor == null)
+    {
+        return NotFound($"Donor with ID {id} not found.");
+    }
+
+    try
+    {
+        await _donorService.DeleteDonorAsync(id);
+        return NoContent();  // Successfully deleted, return 204 No Content
+    }
+    catch
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the donor.");
+    }
+}
 
     }
 

@@ -32,7 +32,7 @@ public class BloodInventoryController : ControllerBase
         return Ok(inventory);*/
     }
 
-    [HttpGet("{id}")]
+[HttpGet("{id:length(24)}")]
     public async Task<IActionResult> GetInventoryById(string id)
     {
        try
@@ -71,6 +71,10 @@ public class BloodInventoryController : ControllerBase
                 {
                     return BadRequest("Invalid inventory data.");
                 }
+                if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
                 inventory.SetId(inventory.Id);
                 await _bloodInventoryService.CreateInventoryAsync(inventory);
@@ -84,9 +88,10 @@ public class BloodInventoryController : ControllerBase
         /*inventory.SetId(inventory.Id);
         await _bloodInventoryService.CreateInventoryAsync(inventory);
         return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);*/
+        
     }
 
-    [HttpPut("{id}")]
+[HttpPut("{id:length(24)}")]
     public async Task<IActionResult> UpdateInventory(string id, [FromBody] Inventory updatedInventory)
     {
          try
@@ -95,6 +100,10 @@ public class BloodInventoryController : ControllerBase
                 {
                     return BadRequest("Invalid input data.");
                 }
+                  if (!ModelState.IsValid)
+                  {
+                    return BadRequest(ModelState);
+                  }
 
                 var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
                 if (existingInventory == null)
@@ -114,7 +123,7 @@ public class BloodInventoryController : ControllerBase
     }
 
 
-    [HttpDelete("{id}")]
+      [HttpDelete("{id:length(24)}")]
     public async Task<IActionResult> DeleteInventory(string id)
     {
         try

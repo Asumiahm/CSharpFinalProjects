@@ -9,7 +9,6 @@ namespace BloodBankAPI.Services
     public interface IDonationService
     {
         Task<Donation> CreateDonationAsync(Donation donation);  
-        Task<List<Donation>> GetAllDonationsAsync(); 
-    }
+Task<List<Donation>> GetAllDonationsPaginatedAsync(int page, int pageSize);    }
     
 }

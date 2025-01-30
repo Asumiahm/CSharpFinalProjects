@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BloodBankAPI.Services;
 using BloodBankAPI.Models;
-
+using MongoDB.Bson;
 
 namespace BloodBankAPI.Controllers{
 
@@ -16,24 +16,28 @@ public class DonationController : ControllerBase
         _donationService = donationService;
     }
 
-    [HttpGet]
-public async Task<ActionResult<List<Donation>>> GetAllDonations()
-{
-
-            try // Error Handling Added
+[HttpGet]
+        public async Task<ActionResult<List<Donation>>> GetAllDonations(int page, int pageSize)
+        {
+            try
             {
-                var donations = await _donationService.GetAllDonationsAsync();
+                if (page < 1 || pageSize < 1)
+                {
+                    return BadRequest("Page and pageSize must be greater than zero.");
+                }
+
+                var donations = await _donationService.GetAllDonationsPaginatedAsync(page, pageSize);
                 if (donations == null || donations.Count == 0)
                 {
                     return NotFound("No donations found.");
                 }
                 return Ok(donations);
             }
-            catch (Exception ex) // Error Handling Added
+            catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred while fetching donations: {ex.Message}");
             }
-}
+        }
 
 
     [HttpPost]
@@ -45,7 +49,14 @@ public async Task<ActionResult<Donation>> CreateDonation([FromBody] Donation don
         {
             return BadRequest("Donation data is required.");
         }
-
+        if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (string.IsNullOrWhiteSpace(donation.DonorId) || !ObjectId.TryParse(donation.DonorId, out _))
+            {
+                return BadRequest(new { message = "Invalid Donor ID format. It must be a 24-character hex string." });
+            }
         donation.SetId(donation.Id); 
 
         var createdDonation = await _donationService.CreateDonationAsync(donation);
