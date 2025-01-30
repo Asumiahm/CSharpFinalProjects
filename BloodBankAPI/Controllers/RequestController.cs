@@ -18,8 +18,20 @@ namespace BloodBankAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Request>>> GetAllRequests()
         {
-            var requests = await _requestService.GetAllRequestsAsync();
-            return Ok(requests);
+             try
+            {
+                var requests = await _requestService.GetAllRequestsAsync();
+                if (requests == null || requests.Count == 0)
+                {
+                    return NotFound("No requests found.");
+                }
+                return Ok(requests);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+           
         }
 
          
@@ -27,14 +39,35 @@ namespace BloodBankAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Request>> CreateRequest([FromBody] Request request)
         {
-            if(request == null){
-                return BadRequest("Invalid request data.");
-            }
+             try
+            {
+                if (request == null)
+                {
+                    return BadRequest("Invalid request data.");
+                }
 
-           request.SetId(request.Id);
-           var createdRequest = await _requestService.CreateRequestAsync(request);
-           return CreatedAtAction(nameof(GetAllRequests), new { id = createdRequest.Id }, createdRequest);
+                if (string.IsNullOrEmpty(request.Id))
+                {
+                    return BadRequest("Request ID is required.");
+                }
+
+                request.SetId(request.Id);
+                var createdRequest = await _requestService.CreateRequestAsync(request);
+
+                if (createdRequest == null)
+                {
+                    return StatusCode(500, "Error creating the request.");
+                }
+
+                return CreatedAtAction(nameof(GetAllRequests), new { id = createdRequest.Id }, createdRequest);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+           
         }
  
     }
-}
+

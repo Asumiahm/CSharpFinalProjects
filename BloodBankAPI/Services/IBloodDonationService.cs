@@ -11,4 +11,5 @@ namespace BloodBankAPI.Services
         Task<Donation> CreateDonationAsync(Donation donation);  
         Task<List<Donation>> GetAllDonationsAsync(); 
     }
+    
 }

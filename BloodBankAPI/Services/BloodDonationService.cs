@@ -16,15 +16,39 @@ public class DonationService : IDonationService
 
 public async Task<Donation> CreateDonationAsync(Donation donation)
 {
-    await _donationCollection.InsertOneAsync(donation);
-    return donation;
+            try
+            {
+                if (donation == null)
+                {
+                    throw new ArgumentNullException(nameof(donation), "Donation data cannot be null");
+                }
+                await _donationCollection.InsertOneAsync(donation);
+                return donation;
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new Exception($"Bad Request: {ex.Message}"); // Simulating HTTP 400 Bad Request
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Internal Server Error: {ex.Message}"); // Simulating HTTP 500 Internal Server Error
+            }
+    /*await _donationCollection.InsertOneAsync(donation);
+    return donation;*/
 }
 
 public async Task<List<Donation>> GetAllDonationsAsync()
 {
-    return await _donationCollection.Find(_ => true).ToListAsync();
+            try
+            {
+                return await _donationCollection.Find(_ => true).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Internal Server Error: {ex.Message}"); // Simulating HTTP 500 Internal Server Error
+            }
+   /* return await _donationCollection.Find(_ => true).ToListAsync();*/
 }
 
 }
 }
-

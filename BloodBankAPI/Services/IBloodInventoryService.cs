@@ -8,7 +8,7 @@ namespace BloodBankAPI.Services
     {
         Task<IEnumerable<Inventory>> GetAllInventoryAsync();
         Task<Inventory> GetInventoryByIdAsync(string id);
-        Task CreateInventoryAsync(Inventory inventory);
+        Task <Inventory> CreateInventoryAsync(Inventory inventory);
         Task UpdateInventoryAsync(string id, Inventory updatedInventory);
         Task DeleteInventoryAsync(string id);
     }

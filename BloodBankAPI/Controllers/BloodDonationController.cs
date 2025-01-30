@@ -19,26 +19,57 @@ public class DonationController : ControllerBase
     [HttpGet]
 public async Task<ActionResult<List<Donation>>> GetAllDonations()
 {
-    var donations = await _donationService.GetAllDonationsAsync();
-    if (donations == null || donations.Count == 0)
-    {
-        return NotFound("No donations found.");
-    }
-    return Ok(donations);
+
+            try // Error Handling Added
+            {
+                var donations = await _donationService.GetAllDonationsAsync();
+                if (donations == null || donations.Count == 0)
+                {
+                    return NotFound("No donations found.");
+                }
+                return Ok(donations);
+            }
+            catch (Exception ex) // Error Handling Added
+            {
+                return StatusCode(500, $"An error occurred while fetching donations: {ex.Message}");
+            }
 }
 
 
     [HttpPost]
 public async Task<ActionResult<Donation>> CreateDonation([FromBody] Donation donation)
-{
-    if (donation == null)
+{   
+   try
+    {
+        if (donation == null)
+        {
+            return BadRequest("Donation data is required.");
+        }
+
+        donation.SetId(donation.Id); 
+
+        var createdDonation = await _donationService.CreateDonationAsync(donation);
+
+        return CreatedAtAction(nameof(GetAllDonations), new { id = createdDonation.Id }, createdDonation);
+    }
+    catch (ArgumentException ex)
+    {
+        return BadRequest($"Invalid input: {ex.Message}");
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"An error occurred while creating the donation: {ex.Message}");
+    }
+    /*if (donation == null)
     {
         return BadRequest("Donation data is required.");
     }
     donation.SetId(donation.Id);
     
     var createdDonation = await _donationService.CreateDonationAsync(donation);
-    return CreatedAtAction(nameof(GetAllDonations), new { id = createdDonation.Id }, createdDonation);
+    return CreatedAtAction(nameof(GetAllDonations), new { id = createdDonation.Id }, createdDonation);*/
+}
+   
 }
 }
-}
+

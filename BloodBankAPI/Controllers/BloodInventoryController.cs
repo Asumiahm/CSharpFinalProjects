@@ -19,48 +19,131 @@ public class BloodInventoryController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllInventory()
     {
-        var inventory = await _bloodInventoryService.GetAllInventoryAsync();
-        return Ok(inventory);
+         try
+            {
+                var inventory = await _bloodInventoryService.GetAllInventoryAsync();
+                return Ok(inventory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        /*var inventory = await _bloodInventoryService.GetAllInventoryAsync();
+        return Ok(inventory);*/
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetInventoryById(string id)
     {
-       
-        var inventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
+       try
+            {
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    return BadRequest("Invalid ID provided.");
+                }
+
+                var inventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
+                if (inventory == null)
+                {
+                    return NotFound("Inventory not found.");
+                }
+
+                return Ok(inventory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+       /* var inventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
         if (inventory == null)
         {
             return NotFound();
         }
-        return Ok(inventory);
+        return Ok(inventory);*/
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateInventory(Inventory inventory)
     {
-        inventory.SetId(inventory.Id);
+        try
+            {
+                if (inventory == null || string.IsNullOrWhiteSpace(inventory.BloodType) || inventory.Quantity < 1)
+                {
+                    return BadRequest("Invalid inventory data.");
+                }
+
+                inventory.SetId(inventory.Id);
+                await _bloodInventoryService.CreateInventoryAsync(inventory);
+
+                return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        /*inventory.SetId(inventory.Id);
         await _bloodInventoryService.CreateInventoryAsync(inventory);
-        return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);
+        return CreatedAtAction(nameof(GetInventoryById), new { id = inventory.Id }, inventory);*/
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateInventory(string id, [FromBody] Inventory updatedInventory)
     {
-        await _bloodInventoryService.UpdateInventoryAsync(id, updatedInventory);
-        return NoContent();  // If the update was successful, return 204 No Content
+         try
+            {
+                if (string.IsNullOrWhiteSpace(id) || updatedInventory == null)
+                {
+                    return BadRequest("Invalid input data.");
+                }
+
+                var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
+                if (existingInventory == null)
+                {
+                    return NotFound("Inventory not found.");
+                }
+
+                await _bloodInventoryService.UpdateInventoryAsync(id, updatedInventory);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        /*await _bloodInventoryService.UpdateInventoryAsync(id, updatedInventory);
+        return NoContent();  // If the update was successful, return 204 No Content*/
     }
 
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInventory(string id)
     {
-        var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
+        try
+            {
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    return BadRequest("Invalid ID provided.");
+                }
+
+                var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
+                if (existingInventory == null)
+                {
+                    return NotFound("Inventory not found.");
+                }
+
+                await _bloodInventoryService.DeleteInventoryAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        /*var existingInventory = await _bloodInventoryService.GetInventoryByIdAsync(id);
         if (existingInventory == null)
         {
             return NotFound();
         }
         await _bloodInventoryService.DeleteInventoryAsync(id);
-        return NoContent();
+        return NoContent();*/
     }
   }
 }
